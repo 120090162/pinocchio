@@ -107,6 +107,12 @@ namespace pinocchio
       return stats;
     }
 
+    void reset()
+    {
+      x.setZero();
+      y.setZero();
+    }
+
   protected:
     /// \brief Previous temporary value of the optimum.
     VectorXs x, x_previous;

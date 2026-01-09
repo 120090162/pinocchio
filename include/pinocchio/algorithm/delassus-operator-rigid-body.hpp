@@ -185,6 +185,28 @@ namespace pinocchio
       return res;
     }
 
+    /// \brief Fill the input matrix with the matrix resulting from the decomposition
+    template<typename MatrixType>
+    void matrix(const Eigen::MatrixBase<MatrixType> & mat, bool enforce_symmetry = false) const
+    {
+      MatrixType & res = mat.const_cast_derived();
+      if ((res.rows() != this->size()) || (res.cols() != this->size()))
+        res.resize(this->size(), this->size());
+
+      typedef Eigen::Map<VectorXs> MapVectorXs;
+      MapVectorXs x = MapVectorXs(PINOCCHIO_EIGEN_MAP_ALLOCA(Scalar, this->size(), 1));
+
+      for (Eigen::DenseIndex i = 0; i < this->size(); ++i)
+      {
+        x = VectorXs::Unit(this->size(), i);
+        this->applyOnTheRight(x, res.col(i));
+      }
+      if (enforce_symmetry)
+      {
+        res = 0.5 * (res + res.transpose());
+      }
+    }
+
   protected:
     void compute_or_update_decomposition(bool apply_on_the_right, bool solve_in_place);
 
